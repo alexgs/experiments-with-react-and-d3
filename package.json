@@ -1,0 +1,8 @@
+{
+  "name": "experiments-with-react-and-d3",
+  "version": "0.1.0",
+  "description": "Experiments in directly integrating React and D3",
+  "main": "index.js",
+  "author": "Phil Gates-Shannon <phil.gs@gmail.com>",
+  "license": "BSD-3-Clause"
+}
