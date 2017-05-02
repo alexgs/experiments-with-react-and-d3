@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDom from 'react-dom';
 import Streamograph from './Streamograph';
+import StreamContainer from './StreamContainer';
 import './stylesheets/app.scss';
 
 // TODO 1. Add button ot transition between layers
@@ -22,13 +23,7 @@ class AppContainer extends React.Component {
         return (
             <div>
                 <h1>Experiments in React and D3</h1>
-                <Streamograph
-                    height={ this.state.height }
-                    k={ this.state.k }
-                    m={ this.state.m }
-                    n={ this.state.n }
-                    width={ this.state.width }
-                />
+                <StreamContainer/>
             </div>
         );
     }

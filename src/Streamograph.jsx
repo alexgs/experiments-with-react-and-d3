@@ -2,8 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
 
-let priv = {};
-
 class Streamograph extends React.Component {
 
     shouldComponentUpdate() {
@@ -15,29 +13,26 @@ class Streamograph extends React.Component {
         this.drawGraph();
     }
 
+    componentWillReceiveProps( nextProps ) {
+        if ( this.props.stack !== nextProps.stack ) {
+            // Save the new stack
+            this.props.stack = nextProps.stack;
+
+            // Update the graph
+            const svg = d3.select( this.svg );
+            svg.selectAll( 'path' )
+                .data( this.props.stack )
+                .transition()
+                .duration( 2500 )
+                .attr( 'd', area );
+        }
+    }
+
     /**
      * Draws the "streamograph" graph. Adapted from
      * https://bl.ocks.org/mbostock/4060954
      */
     drawGraph() {
-        priv.stack = d3.stack()
-            .keys( d3.range( this.props.n ) )
-            .offset( d3.stackOffsetWiggle );
-
-        priv.displayLayer = priv.stack(
-            d3.transpose(
-                d3.range( this.props.n )
-                    .map( () => bumps( this.props.m, this.props.k ) )
-            )
-        );
-        priv.hiddenLayer = priv.stack(
-            d3.transpose(
-                d3.range( this.props.n )
-                    .map( () => bumps( this.props.m, this.props.k ) )
-            )
-        );
-        priv.allLayers = priv.displayLayer.concat( priv.hiddenLayer );
-
         const svg = d3.select( this.svg );
 
         const x = d3.scaleLinear()
@@ -46,8 +41,8 @@ class Streamograph extends React.Component {
 
         const y = d3.scaleLinear()
             .domain( [
-                d3.min( priv.allLayers, stackMin ),
-                d3.max( priv.allLayers, stackMax )
+                d3.min( this.props.stack, stackMin ),
+                d3.max( this.props.stack, stackMax )
             ] )
             .range( [ this.props.height, 0 ] );
 
@@ -59,7 +54,7 @@ class Streamograph extends React.Component {
             .y1( d => y( d[ 1 ] ) );
 
         svg.selectAll( 'path' )
-            .data( priv.displayLayer )
+            .data( this.props.stack )
             .enter().append( 'path' )
             .attr( 'd', area )
             .attr( 'fill', () => z( Math.random() ) );
@@ -70,38 +65,6 @@ class Streamograph extends React.Component {
 
         function stackMin( layer ) {
             return d3.min( layer, d => d[ 0 ] );
-        }
-
-        function transition() {
-            let t;
-            t = priv.hiddenLayer;
-            priv.hiddenLayer = priv.displayLayer;
-            priv.displayLayer = t;
-
-            d3.selectAll( 'path' )
-                .data( priv.displayLayer )
-                .transition()
-                .duration( 2500 )
-                .attr( 'd', area );
-        }
-
-        // Inspired by Lee Byron’s test data generator.
-        function bumps( n, m ) {
-            const a = [];
-            let i;
-            for ( i = 0; i < n; ++i ) a[ i ] = 0;
-            for ( i = 0; i < m; ++i ) bump( a, n );
-            return a;
-        }
-
-        function bump( a, n ) {
-            const x = 1 / (0.1 + Math.random()),
-                y = 2 * Math.random() - 0.5,
-                z = 10 / (0.1 + Math.random());
-            for ( let i = 0; i < n; i++ ) {
-                let w = (i / n - y) * z;
-                a[ i ] += x * Math.exp( -w * w );
-            }
         }
     }
 
@@ -121,9 +84,8 @@ class Streamograph extends React.Component {
 
 Streamograph.propTypes = {
     height: PropTypes.number.isRequired,
-    k: PropTypes.number.isRequired,
     m: PropTypes.number.isRequired,
-    n: PropTypes.number.isRequired,
+    stack: PropTypes.any.isRequired,
     width: PropTypes.number.isRequired
 };
 
