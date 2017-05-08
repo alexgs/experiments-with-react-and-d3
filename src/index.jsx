@@ -5,8 +5,6 @@ import _ from 'lodash';
 import BarChart from './BarChart';
 import './stylesheets/app.scss';
 
-// TODO Verify that SVG is not getting updated when the component gets new props
-
 const columnLabels = [
     'Homer Simpson',
     'Marge Simpson',
@@ -68,7 +66,7 @@ class AppContainer extends React.Component {
     }
 
     handleGenerateClick() {
-        const newDataset = generateData();
+        const newDataset = generateData( undefined, 1 );
         const currentIndex = this.state.currentIndex + 1;
         const data = this.state.data.push( newDataset );
         this.setState( {

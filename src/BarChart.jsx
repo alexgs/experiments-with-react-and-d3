@@ -18,13 +18,34 @@ class BarChart extends React.Component {
     constructor( props ) {
         super( props );
         this.state = {
+            data: Immutable.Map(),
             height: 400,
             width: 960
         };
     }
 
+    componentWillMount() {
+        this.setState( {
+            data: this.props.data
+        } );
+    }
+
     componentDidMount() {
         this.drawGraph();
+    }
+
+    componentWillReceiveProps( nextProps ) {
+        if ( nextProps.data !== this.state.data ) {
+            console.log( '~~~ Bar Chart will receive new data: '
+                + JSON.stringify( nextProps.data.toJSON(), null, 2 ) );
+            this.setState( {
+                data: nextProps.data
+            } );
+
+            // TODO (1) Correctly update or draw the new graph
+            // TODO (2) Animate the transition
+            this.drawGraph();
+        }
     }
 
     drawGraph() {
@@ -44,7 +65,7 @@ class BarChart extends React.Component {
 
         const chart = d3.select( this.svg ).append( 'g' );
         const bars = chart.selectAll( 'rect' )
-            .data( this.props.data.toArray() );
+            .data( this.state.data.toArray() );
 
         bars.enter()
             .append( 'rect' )
@@ -66,8 +87,8 @@ class BarChart extends React.Component {
                     width={ this.state.width }
                     height={ this.state.height }
                 />
-                <pre style={{ display: 'none' }} >
-                    { JSON.stringify( this.props.data.toJSON(), null, 2 ) }
+                <pre>
+                    { JSON.stringify( this.state.data.toJSON(), null, 2 ) }
                 </pre>
             </div>
         );
