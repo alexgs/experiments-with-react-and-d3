@@ -61,7 +61,7 @@ class AppContainer extends React.Component {
         super( props );
         this.state = {
             currentIndex: 0,
-            data: Immutable.List( [ generateData() ] ),
+            data: Immutable.List( [ generateData( undefined, 1 ) ] ),
             height: 500,
             width: 960
         };

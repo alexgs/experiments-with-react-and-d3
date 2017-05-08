@@ -18,7 +18,7 @@ class BarChart extends React.Component {
     constructor( props ) {
         super( props );
         this.state = {
-            height: 500,
+            height: 400,
             width: 960
         };
     }
@@ -30,9 +30,16 @@ class BarChart extends React.Component {
     drawGraph() {
         console.log( '=== Executing BarChart.drawGraph() ===' );
 
-        const calcX = getXScale( this.props.data.size );
-        const calcY = getYScale( 20 );
-        const calcHeight = value => value;
+        // const calcX = getXScale( this.props.data.size );
+        const calcX = function( index ) {
+            return ( index * 25 ) + 10;
+        };
+
+        // const calcY = getYScale( 20 );
+        const calcY = function( data, height ) {
+            return height - ( data * 20 );
+        };
+        const calcHeight = value => value * 20;
         const calcWidth = () => 20;
 
         const chart = d3.select( this.svg ).append( 'g' );
@@ -42,8 +49,8 @@ class BarChart extends React.Component {
         bars.enter()
             .append( 'rect' )
             .attr( 'class', 'bar' )
-            .attr( 'x', d => calcX( d ) )
-            .attr( 'y', d => calcY( d ) )
+            .attr( 'x', ( d, i ) => calcX( i ) )
+            .attr( 'y', d => calcY( d, this.state.height ) )
             .attr( 'height', d => calcHeight( d ) )
             .attr( 'width', d => calcWidth( d ) )
         ;
